@@ -1,0 +1,76 @@
+.global _start           
+
+.equ amark, 90            // Minimum grade for A
+.equ bmark, 75            // Minimum grade for B
+.equ cmark, 50            // Minimum grade for C
+
+.section .data
+amessage:
+    .asciz "Congratulations! You got an A. \n"
+alen = .-amessage
+
+bmessage:
+    .asciz "Good job! You got a B. \n"
+blen = .-bmessage
+
+cmessage:
+    .asciz "Not bad, you got a C. \n"
+clen = .-cmessage
+
+fmessage:
+    .asciz "Sorry, you got an F. \n"
+flen = .-fmessage
+
+.section .text
+_start:
+    LDR R5, =99           // Load the grade into R5
+    LDR R6, =amark        // Load grade A threshold into R6
+    LDR R7, =bmark        // Load grade B threshold into R7
+    LDR R8, =cmark        // Load grade C threshold into R8
+
+    CMP R5, R6             // Check if grade >= A threshold
+    BGE grade_A            // Go to grade_A if true
+
+    CMP R5, R7             // Check if grade >= B threshold
+    BGE grade_B            // Go to grade_B if true
+
+    CMP R5, R8             // Check if grade >= C threshold
+    BGE grade_C            // Go to grade_C if true
+
+    LDR R1, =fmessage      // Load "Sorry, you got an F." message
+    LDR R2, =flen          // Load message length
+    MOV R7, #4             // Prepare for syscall (write)
+    MOV R0, #1             // Set stdout as file descriptor
+    SWI 0                  // Execute syscall
+
+    B end_program          // Jump to end of program
+
+grade_A:
+    LDR R1, =amessage      // Load "Congratulations! You got an A." message
+    LDR R2, =alen          // Load message length
+    MOV R7, #4             // Prepare for syscall (write)
+    MOV R0, #1             // Set stdout as file descriptor
+    SWI 0                  // Execute syscall
+
+    B end_program          // Jump to end of program
+
+grade_B:
+    LDR R1, =bmessage      // Load "Good job! You got a B." message
+    LDR R2, =blen          // Load message length
+    MOV R7, #4             // Prepare for syscall (write)
+    MOV R0, #1             // Set stdout as file descriptor
+    SWI 0                  // Execute syscall
+
+    B end_program          // Jump to end of program
+
+grade_C:
+    LDR R1, =cmessage      // Load "Not bad, you got a C." message
+    LDR R2, =clen          // Load message length
+    MOV R7, #4             // Prepare for syscall (write)
+    MOV R0, #1             // Set stdout as file descriptor
+    SWI 0                  // Execute syscall
+
+end_program:
+    MOV R7, #1             // Prepare for syscall (exit)
+    SWI 0                  // Terminate the program
+
